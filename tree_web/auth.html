@@ -1,0 +1,140 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Account - TreeMapper</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/auth.css" />
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<section id="header" class="wrapper">
+					<!-- Logo -->
+						<div id="logo">
+							<h1><a href="index.html">TreeMapper</a></h1>
+							<p>Discover and track trees in your community</p>
+						</div>
+
+					<!-- Nav -->
+						<nav id="nav">
+							<ul>
+								<li><a href="index.html">Home</a></li>
+								<li><a href="treeMap.html">Tree Map</a></li>
+								<li><a href="pollution.html">Pollution Map</a></li>
+								<li>
+									<a href="treeDatabase.html">Tree Database</a>
+									<ul>
+										<li><a href="treeDatabase.html#tree-types">Tree Type Database</a></li>
+										<li><a href="treeDatabase.html#tree-database">Tree Database</a></li>
+										<li><a href="treeDatabase.html#upload-tree">Upload Tree</a></li>
+									</ul>
+								</li>
+								<li><a href="community.html">Community</a></li>
+								<li class="admin-only" style="display: none;"><a href="adminDashboard.html">Admin Dashboard</a></li>
+							</ul>
+						</nav>
+				</section>
+
+			<!-- Main -->
+				<section id="main" class="wrapper style2">
+					<div class="title">Account Access</div>
+					<div class="container">
+						<div class="auth-tabs">
+							<button class="tab-button active" onclick="switchTab('signin')">Sign In</button>
+							<button class="tab-button" onclick="switchTab('signup')">Sign Up</button>
+						</div>
+
+						<!-- Sign In Form -->
+						<div id="signin-form" class="form-container active">
+							<form class="auth-form" action="#" method="POST">
+								<div class="row gtr-50">
+									<div class="col-12">
+										<input type="text" name="username" placeholder="Username" required />
+									</div>
+									<div class="col-12">
+										<input type="password" name="password" placeholder="Password" required />
+									</div>
+									<div class="col-12">
+										<ul class="actions">
+											<li><input type="submit" class="style1" value="Sign In" /></li>
+											<li><input type="reset" class="style2" value="Reset" /></li>
+										</ul>
+									</div>
+								</div>
+							</form>
+						</div>
+
+						<!-- Sign Up Form -->
+						<div id="signup-form" class="form-container">
+							<form class="auth-form" action="#" method="POST">
+								<div class="row gtr-50">
+									<div class="col-12">
+										<input type="email" name="email" placeholder="Email" required />
+									</div>
+									<div class="col-12">
+										<input type="text" name="username" placeholder="Username" required />
+									</div>
+									<div class="col-12">
+										<input type="password" name="password" placeholder="Password" required />
+									</div>
+									<div class="col-12">
+										<input type="password" name="confirm-password" placeholder="Confirm Password" required />
+									</div>
+									<div class="col-12">
+										<ul class="actions">
+											<li><input type="submit" class="style1" value="Sign Up" /></li>
+											<li><input type="reset" class="style2" value="Reset" /></li>
+										</ul>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</section>
+
+			<!-- Footer -->
+				<section id="footer" class="wrapper">
+					<div class="container">
+						<div id="copyright">
+							<ul>
+								<li>&copy; TreeMapper. All rights reserved.</li><li>Design: <a href="#">Efstratios Kountouras</a></li>
+							</ul>
+						</div>
+					</div>
+				</section>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/auth.js"></script>
+			<script>
+				function switchTab(tab) {
+					// Update tab buttons
+					document.querySelectorAll('.tab-button').forEach(button => {
+						button.classList.remove('active');
+					});
+					event.target.classList.add('active');
+
+					// Update form visibility
+					document.querySelectorAll('.form-container').forEach(form => {
+						form.classList.remove('active');
+					});
+					document.getElementById(tab + '-form').classList.add('active');
+				}
+
+				// Check authentication status on page load
+				document.addEventListener('DOMContentLoaded', function() {
+					checkAuth();
+				});
+			</script>
+	</body>
+</html> 

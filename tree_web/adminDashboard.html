@@ -1,0 +1,630 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Admin Dashboard - TreeMapper</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<style>
+			.user-table {
+				width: 100%;
+				margin-bottom: 2em;
+			}
+			.user-table th {
+				background-color: #2ecc71;
+				color: white;
+				padding: 1em;
+			}
+			.user-table td {
+				padding: 0.75em;
+			}
+			.user-table tr:nth-child(even) {
+				background-color: rgba(46, 204, 113, 0.1);
+			}
+			.user-actions {
+				display: flex;
+				gap: 0.5em;
+			}
+			.status-badge {
+				padding: 0.3em 0.6em;
+				border-radius: 3px;
+				font-size: 0.9em;
+				font-weight: bold;
+			}
+			.status-ACTIVE {
+				background-color: #2ecc71;
+				color: white;
+			}
+			.status-PENDING {
+				background-color: #f1c40f;
+				color: white;
+			}
+			.status-SUSPENDED {
+				background-color: #e74c3c;
+				color: white;
+			}
+			.role-badge {
+				padding: 0.3em 0.6em;
+				border-radius: 3px;
+				background-color: #34495e;
+				color: white;
+				font-size: 0.9em;
+			}
+			#user-modal, #request-modal {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0,0,0,0.5);
+				z-index: 1000;
+				overflow-y: auto;
+				padding: 20px;
+			}
+			.modal-content {
+				position: relative;
+				background-color: white;
+				margin: 2% auto;
+				padding: 2em;
+				width: 90%;
+				max-width: 600px;
+				border-radius: 8px;
+				max-height: 90vh;
+				overflow-y: auto;
+			}
+			.close-modal {
+				position: absolute;
+				right: 1em;
+				top: 1em;
+				cursor: pointer;
+				font-size: 1.5em;
+			}
+			.request-table {
+				width: 100%;
+				margin-bottom: 2em;
+			}
+			.request-table th {
+				background-color: #2ecc71;
+				color: white;
+				padding: 1em;
+			}
+			.request-table td {
+				padding: 0.75em;
+			}
+			.request-table tr:nth-child(even) {
+				background-color: rgba(46, 204, 113, 0.1);
+			}
+			.status-PENDING {
+				background-color: #f1c40f;
+				color: white;
+			}
+			.status-OPEN {
+				background-color: #3498db;
+				color: white;
+			}
+			.status-CLOSED {
+				background-color: #2ecc71;
+				color: white;
+			}
+			.description-box {
+				background-color: #f8f9fa;
+				padding: 1em;
+				border-radius: 4px;
+				margin: 0.5em 0;
+				white-space: pre-wrap;
+				max-height: 200px;
+				overflow-y: auto;
+			}
+			.request-details {
+				background-color: #f8f9fa;
+				padding: 1em;
+				border-radius: 4px;
+				margin-bottom: 1em;
+				max-height: 300px;
+				overflow-y: auto;
+			}
+			.request-type-badge {
+				padding: 0.3em 0.6em;
+				border-radius: 3px;
+				font-size: 0.9em;
+				font-weight: bold;
+			}
+			.type-TREE {
+				background-color: #27ae60;
+				color: white;
+			}
+			.type-PROFILE {
+				background-color: #9b59b6;
+				color: white;
+			}
+			.type-OTHER {
+				background-color: #95a5a6;
+				color: white;
+			}
+		</style>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<section id="header" class="wrapper">
+					<!-- Auth Buttons -->
+					<div id="auth-container">
+						<!-- Will be populated by JavaScript -->
+					</div>
+
+					<!-- Logo -->
+						<div id="logo">
+							<h1><a href="index.html">TreeMapper</a></h1>
+							<p>Discover and track trees in your community</p>
+						</div>
+
+					<!-- Nav -->
+						<nav id="nav">
+							<ul>
+								<li><a href="index.html">Home</a></li>
+								<li><a href="treeMap.html">Tree Map</a></li>
+								<li><a href="pollution.html">Pollution Map</a></li>
+								<li>
+									<a href="treeDatabase.html">Tree Database</a>
+									<ul>
+										<li><a href="treeDatabase.html#tree-types">Tree Type Database</a></li>
+										<li><a href="treeDatabase.html#tree-database">Tree Database</a></li>
+										<li><a href="treeDatabase.html#upload-tree">Upload Tree</a></li>
+									</ul>
+								</li>
+								<li><a href="community.html">Community</a></li>
+								<li class="active admin-only"><a href="adminDashboard.html">Admin Dashboard</a></li>
+							</ul>
+						</nav>
+				</section>
+
+			<!-- Main -->
+				<section id="main" class="wrapper style2">
+					<div class="title">Admin Dashboard</div>
+					<div class="container">
+						<!-- User Management Section -->
+						<section id="user-management">
+							<h2>User Management</h2>
+							<div class="table-wrapper">
+								<table class="user-table">
+									<thead>
+										<tr>
+											<th>Username</th>
+											<th>Email</th>
+											<th>Status</th>
+											<th>Role</th>
+											<th>Member Since</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody id="user-list">
+										<!-- Will be populated by JavaScript -->
+									</tbody>
+								</table>
+							</div>
+						</section>
+
+						<!-- Request Management Section -->
+						<section id="request-management">
+							<h2>Request Management</h2>
+							<div class="table-wrapper">
+								<table class="request-table">
+									<thead>
+										<tr>
+											<th>User</th>
+											<th>Type</th>
+											<th>Status</th>
+											<th>Description</th>
+											<th>Created</th>
+											<th>Opened</th>
+											<th>Resolved</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody id="request-list">
+										<!-- Will be populated by JavaScript -->
+									</tbody>
+								</table>
+							</div>
+						</section>
+					</div>
+				</section>
+
+			<!-- User Edit Modal -->
+			<div id="user-modal">
+				<div class="modal-content">
+					<span class="close-modal">&times;</span>
+					<h3>Edit User</h3>
+					<form id="edit-user-form">
+						<input type="hidden" name="user_id" id="edit-user-id">
+						<div class="row gtr-50">
+							<div class="col-12">
+								<label for="edit-status">Status</label>
+								<select name="status" id="edit-status" required>
+									<option value="ACTIVE">Active</option>
+									<option value="PENDING">Pending</option>
+									<option value="SUSPENDED">Suspended</option>
+								</select>
+							</div>
+							<div class="col-12">
+								<label for="edit-role">Role</label>
+								<select name="role" id="edit-role" required>
+									<option value="user">User</option>
+									<option value="admin">Admin</option>
+								</select>
+							</div>
+							<div class="col-12">
+								<ul class="actions">
+									<li><input type="submit" class="button style1" value="Save Changes" /></li>
+									<li><input type="button" class="button style2" value="Cancel" onclick="closeModal()" /></li>
+								</ul>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<!-- Request Edit Modal -->
+			<div id="request-modal">
+				<div class="modal-content">
+					<span class="close-modal-request">&times;</span>
+					<h3>Edit Request</h3>
+					<form id="edit-request-form">
+						<input type="hidden" name="request_id" id="edit-request-id">
+						<div class="row gtr-50">
+							<div class="col-12">
+								<label>Request Details</label>
+								<div class="request-details">
+									<p><strong>User:</strong> <span id="request-user"></span></p>
+									<p><strong>Type:</strong> <span id="request-type"></span></p>
+									<p><strong>Tree ID:</strong> <span id="request-tree-id"></span></p>
+									<p><strong>Description:</strong></p>
+									<div id="request-description" class="description-box"></div>
+								</div>
+							</div>
+							<div class="col-12">
+								<label for="edit-request-status">Status</label>
+								<select name="status" id="edit-request-status" required>
+									<option value="PENDING">Pending</option>
+									<option value="OPEN">Open</option>
+									<option value="CLOSED">Closed</option>
+								</select>
+							</div>
+							<div class="col-12">
+								<label for="edit-request-reply">Admin Reply</label>
+								<textarea name="reply" id="edit-request-reply" rows="4" placeholder="Enter your response to this request"></textarea>
+							</div>
+							<div class="col-12">
+								<ul class="actions">
+									<li><input type="submit" class="button style1" value="Save Changes" /></li>
+									<li><input type="button" class="button style2" value="Cancel" onclick="closeRequestModal()" /></li>
+								</ul>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<!-- Footer -->
+				<section id="footer" class="wrapper">
+					<div class="container">
+						<div id="copyright">
+							<ul>
+								<li>&copy; TreeMapper. All rights reserved.</li><li>Design: <a href="#">Efstratios Kountouras</a></li>
+							</ul>
+						</div>
+					</div>
+				</section>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/auth.js"></script>
+			<script>
+				document.addEventListener('DOMContentLoaded', function() {
+					checkAdminAuth();
+					loadUsers();
+					loadRequests();
+				});
+
+				function checkAdminAuth() {
+					const user = JSON.parse(localStorage.getItem('user'));
+					if (!user || user.role !== 'admin') {
+						window.location.href = 'index.html';
+					}
+				}
+
+				function loadUsers() {
+					fetch('api/user.php', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ action: 'get_all_users' })
+					})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							const userList = document.getElementById('user-list');
+							userList.innerHTML = '';
+							
+							data.users.forEach(user => {
+								const row = document.createElement('tr');
+								row.innerHTML = `
+									<td>${user.username}</td>
+									<td>${user.email}</td>
+									<td><span class="status-badge status-${user.status}">${user.status}</span></td>
+									<td><span class="role-badge">${user.role}</span></td>
+									<td>${new Date(user.created_at).toLocaleDateString()}</td>
+									<td>
+										<div class="user-actions">
+											<button class="button small style1" onclick="editUser(${user.id})">Edit</button>
+										</div>
+									</td>
+								`;
+								userList.appendChild(row);
+							});
+						} else {
+							showMessage('error', data.message);
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						showMessage('error', 'Failed to load users');
+					});
+				}
+
+				function editUser(userId) {
+					console.log('editUser function called with userId:', userId);
+					const currentUser = JSON.parse(localStorage.getItem('user'));
+					if (!currentUser) {
+						showMessage('error', 'User not authenticated');
+						return;
+					}
+
+					fetch('api/user.php', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ 
+							action: 'get_user',
+							user_id: userId,
+							username: currentUser.username
+						})
+					})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							document.getElementById('edit-user-id').value = userId;
+							document.getElementById('edit-status').value = data.user.status;
+							document.getElementById('edit-role').value = data.user.role;
+							document.getElementById('user-modal').style.display = 'block';
+						} else {
+							showMessage('error', data.message);
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						showMessage('error', 'Failed to load user data');
+					});
+				}
+
+				function closeModal() {
+					document.getElementById('user-modal').style.display = 'none';
+				}
+
+				document.getElementById('edit-user-form').addEventListener('submit', function(e) {
+					e.preventDefault();
+					const userId = document.getElementById('edit-user-id').value;
+					const status = document.getElementById('edit-status').value;
+					const role = document.getElementById('edit-role').value;
+
+					fetch('api/user.php', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							action: 'update_user',
+							user_id: userId,
+							status: status,
+							role: role
+						})
+					})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							showMessage('success', 'User updated successfully');
+							closeModal();
+							loadUsers();
+						} else {
+							console.error('data error is:',data.message)
+							showMessage('error', data.message);
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						showMessage('error', 'Failed to update user');
+					});
+				});
+
+				// Close modal when clicking outside
+				window.onclick = function(event) {
+					const userModal = document.getElementById('user-modal');
+					const requestModal = document.getElementById('request-modal');
+					if (event.target === userModal) {
+						closeModal();
+					} else if (event.target === requestModal) {
+						closeRequestModal();
+					}
+				}
+
+				document.querySelector('.close-modal').onclick = closeModal;
+
+				function loadRequests() {
+					fetch('api/requests.php', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ action: 'get_all_admin_requests' })
+					})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							const requestList = document.getElementById('request-list');
+							requestList.innerHTML = '';
+							
+							if (data.requests.length === 0) {
+								const row = document.createElement('tr');
+								row.innerHTML = `
+									<td colspan="8" style="text-align: center; padding: 2em;">
+										<div style="color: #95a5a6;">
+											<i class="fas fa-inbox" style="font-size: 2em; margin-bottom: 0.5em;"></i>
+											<p style="margin: 0;">No requests found. All caught up!</p>
+										</div>
+									</td>
+								`;
+								requestList.appendChild(row);
+								return;
+							}
+							
+							data.requests.forEach(request => {
+								const row = document.createElement('tr');
+								console.log('request is:',request)
+								row.innerHTML = `
+									<td>${request.username}</td>
+									<td><span class="request-type-badge type-${request.type}">${request.type}</span></td>
+									<td><span class="status-badge status-${request.status}">${request.status}</span></td>
+									<td>${request.description.substring(0, 50)}${request.description.length > 50 ? '...' : ''}</td>
+									<td>${new Date(request.created_at).toLocaleDateString()}</td>
+									<td>${request.opened_at ? new Date(request.opened_at).toLocaleDateString() : '-'}</td>
+									<td>${request.resolved_at ? new Date(request.resolved_at).toLocaleDateString() : '-'}</td>
+									<td>
+										<div class="user-actions">
+											<button class="button small style1" onclick="editRequest(${request.id}, '${request.target_id}')">Edit</button>
+										</div>
+									</td>
+								`;
+								requestList.appendChild(row);
+							});
+						} else {
+							showMessage('error', data.message);
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						showMessage('error', 'Failed to load requests');
+					});
+				}
+
+				function editRequest(requestId,target_id) {
+					console.log('editRequest function called with requestId:', requestId);
+					console.log('target_id is:',target_id)
+					fetch('api/requests.php', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ 
+							action: 'get_request',
+							request_id: requestId,
+							target_id: target_id
+						})
+					})
+					.then(response => response.json())
+					.then(data => {
+						console.log('response data is:',data)
+						if (data.success) {
+							const request = data.request;
+							document.getElementById('edit-request-id').value = requestId;
+							document.getElementById('request-user').textContent = request.username;
+							document.getElementById('request-type').textContent = request.type;
+							document.getElementById('request-tree-id').textContent = request.tree_name || 'N/A';
+							document.getElementById('request-description').textContent = request.description;
+							document.getElementById('edit-request-status').value = request.status;
+							document.getElementById('request-modal').style.display = 'block';
+
+							// Update status options based on current status
+							const statusSelect = document.getElementById('edit-request-status');
+							statusSelect.innerHTML = ''; // Clear existing options
+
+							if (request.status === 'PENDING') {
+								statusSelect.add(new Option('Pending', 'PENDING'));
+								statusSelect.add(new Option('Open', 'OPEN'));
+							} else if (request.status === 'OPEN') {
+								statusSelect.add(new Option('Open', 'OPEN'));
+								statusSelect.add(new Option('Closed', 'CLOSED'));
+							} else {
+								statusSelect.add(new Option('Closed', 'CLOSED'));
+							}
+						} else {
+							showMessage('error', data.message);
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						showMessage('error', 'Failed to load request data');
+					});
+				}
+
+				function closeRequestModal() {
+					document.getElementById('request-modal').style.display = 'none';
+				}
+
+				document.getElementById('edit-request-form').addEventListener('submit', function(e) {
+					e.preventDefault();
+					const requestId = document.getElementById('edit-request-id').value;
+					const status = document.getElementById('edit-request-status').value;
+
+					fetch('api/requests.php', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							action: 'update_request_status',
+							request_id: requestId,
+							status: status
+						})
+					})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							showMessage('success', 'Request updated successfully');
+							closeRequestModal();
+							loadRequests(); // Reload the requests list
+						} else {
+							showMessage('error', data.message);
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						showMessage('error', 'Failed to update request');
+					});
+				});
+
+				// Close request modal when clicking outside
+				window.onclick = function(event) {
+					const userModal = document.getElementById('user-modal');
+					const requestModal = document.getElementById('request-modal');
+					if (event.target === userModal) {
+						closeModal();
+					} else if (event.target === requestModal) {
+						closeRequestModal();
+					}
+				}
+
+				document.querySelector('.close-modal-request').onclick = closeRequestModal;
+			</script>
+	</body>
+</html>
